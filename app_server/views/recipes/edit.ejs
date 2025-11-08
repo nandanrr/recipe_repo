@@ -1,0 +1,14 @@
+<h2>Edit Recipe</h2>
+<form method="post" action="/recipes/<%= recipe._id %>/edit">
+  <label>Title <input name="title" value="<%= recipe.title %>" required /></label><br/>
+  <label>Description <textarea name="description"><%= recipe.description %></textarea></label><br/>
+  <label>Image URL <input name="imageUrl" value="<%= recipe.imageUrl || '' %>" placeholder="https://..." /></label><br/>
+  <label>Ingredients (comma separated)
+    <input name="ingredients" value="<%= (recipe.ingredients || []).join(', ') %>" />
+  </label><br/>
+  <label>Steps (comma separated)
+    <input name="steps" value="<%= (recipe.steps || []).join(', ') %>" />
+  </label><br/>
+  <button type="submit">Update</button>
+  <a href="/recipes/<%= recipe._id %>">Cancel</a>
+</form>

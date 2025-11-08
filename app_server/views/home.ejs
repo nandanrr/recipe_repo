@@ -1,0 +1,11 @@
+<h2>Recent Recipes</h2>
+<ul>
+  <% recipes.forEach(r => { %>
+    <li>
+      <% if (r.imageUrl) { %>
+        <img src="<%= r.imageUrl %>" alt="<%= r.title %>" style="width:60px;height:60px;object-fit:cover;vertical-align:middle;margin-right:8px;"/>
+      <% } %>
+      <a href="/recipes/<%= r._id %>"><%= r.title %></a>
+    </li>
+  <% }) %>
+</ul>

@@ -1,0 +1,20 @@
+<h2><%= recipe.title %></h2>
+<% if (recipe.imageUrl) { %>
+  <img src="<%= recipe.imageUrl %>" alt="<%= recipe.title %>" style="max-width:100%;height:auto;margin:0.5rem 0;"/>
+<% } %>
+<p><%= recipe.description %></p>
+<h3>Ingredients</h3>
+<ul>
+  <% recipe.ingredients.forEach(i => { %><li><%= i %></li><% }) %>
+</ul>
+<h3>Steps</h3>
+<ol>
+  <% recipe.steps.forEach(s => { %><li><%= s %></li><% }) %>
+</ol>
+<div style="margin-top:1rem;">
+  <a href="/recipes/<%= recipe._id %>/edit">Edit</a>
+  <form method="post" action="/recipes/<%= recipe._id %>/delete" style="display:inline" onsubmit="return confirm('Delete this recipe?');">
+    <button type="submit">Delete</button>
+  </form>
+  <a href="/recipes">Back</a>
+  </div>
