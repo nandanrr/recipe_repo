@@ -1,3 +1,42 @@
-body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-nav a { margin-right: 1rem; }
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #fafafa;
+}
+
+h1, h2 {
+  color: #333;
+  text-align: center;
+}
+
+a { text-decoration: none; color: #007acc; }
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.detail-img {
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  margin: 1rem auto;
+}

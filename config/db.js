@@ -13,5 +13,4 @@ const connectDB = async (uri) => {
   await mongoose.connect(uri);
   return mongoose.connection;
 };
-
 module.exports = connectDB;

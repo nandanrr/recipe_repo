@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Recipe | Recipe Repo 🍲</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .add-container {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      padding: 40px 35px;
+      width: 450px;
+      text-align: center;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+
+    .add-container:hover {
+      transform: scale(1.02);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #222;
+    }
+
+    input, textarea {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.85);
+      resize: none;
+    }
+
+    button {
+      width: 95%;
+      padding: 12px;
+      background: #4e89ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .back-link {
+      margin-top: 20px;
+      display: inline-block;
+      color: #007acc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <div class="add-container">
+    <h2>🧑‍🍳 Add a New Recipe</h2>
+
+    <form id="addForm">
+      <input name="title" placeholder="Recipe Title" required><br>
+      <textarea name="description" placeholder="Short Description"></textarea><br>
+      <input name="imageUrl" placeholder="Image URL (optional)"><br>
+      <input name="ingredients" placeholder="Ingredients (comma separated)"><br>
+      <input name="steps" placeholder="Steps (comma separated)"><br>
+      <button type="submit">Save Recipe</button>
+    </form>
+
+    <a href="index.html" class="back-link">← Back to Recipes</a>
+  </div>
+
+  <script>
+    // ✅ Check login before showing the form
+    async function checkAuth() {
+      const res = await fetch('/auth/check-session');
+      if (!res.ok) {
+        alert('You must log in before adding a recipe!');
+        window.location.href = '/login.html';
+        return false;
+      }
+      return true;
+    }
+
+    const form = document.getElementById('addForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const allowed = await checkAuth();
+      if (!allowed) return;
+
+      const data = Object.fromEntries(new FormData(form));
+      data.ingredients = data.ingredients.split(',').map(s => s.trim());
+      data.steps = data.steps.split(',').map(s => s.trim());
+
+      const res = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('Recipe added successfully!');
+        window.location.href = '/index.html';
+      } else {
+        alert('Error adding recipe');
+      }
+    });
+
+    // Run auth check when page loads
+    window.onload = checkAuth;
+  </script>
+</body>
+</html>

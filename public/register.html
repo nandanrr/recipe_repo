@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Recipe Repo 🍲</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .register-container {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      padding: 40px 30px;
+      width: 380px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .register-container:hover {
+      transform: scale(1.02);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 1rem;
+    }
+
+    button {
+      width: 95%;
+      padding: 12px;
+      background: #4e89ff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    p {
+      margin-top: 15px;
+      color: #222;
+    }
+
+    a {
+      color: #007acc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+    
+  <div class="register-container">
+    <h2>Create Your Account 🧑‍🍳</h2>
+    <form id="registerForm">
+      <input name="name" placeholder="Full Name" required><br>
+      <input type="email" name="email" placeholder="Email" required><br>
+      <input type="password" name="password" placeholder="Password" required><br>
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      const res = await fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data)
+      });
+      if (res.ok) {
+        alert('Registration successful!');
+        window.location.href = '/login.html';
+      } else {
+        alert('Email already exists or invalid input.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Details | Recipe Repo 🍲</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* 🌈 Base Layout */
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* 🧊 Recipe Card */
+    .recipe-card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      padding: 2rem 2.5rem;
+      max-width: 750px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 🖼️ Recipe Image */
+    .recipe-card img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.4s ease;
+}
+
+
+    .recipe-card img:hover {
+      transform: scale(1.03);
+    }
+
+    h1 {
+      color: #1a1a1a;
+      font-size: 1.9rem;
+      margin-bottom: 10px;
+      text-transform: capitalize;
+    }
+
+    p {
+      color: #333;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ✨ Section Titles */
+    h3 {
+      color: #222;
+      margin-top: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.2rem;
+      position: relative;
+    }
+
+    
+
+    /* 🥕 Ingredient / Steps Lists */
+    ul, ol {
+      text-align: left;
+      margin: 1rem auto;
+      padding-left: 1.5rem;
+      max-width: 600px;
+      color: #333;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    li {
+      margin-bottom: 0.6rem;
+    }
+
+    /* 🔘 Action Buttons */
+    .actions {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+      background: #4e89ff;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(78, 137, 255, 0.4);
+    }
+
+    .edit-btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .delete-btn {
+      background: #ff5e3a;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(255, 94, 58, 0.4);
+    }
+
+    .delete-btn:hover {
+      background: #e63946;
+      transform: translateY(-2px);
+    }
+
+    /* 🔙 Back Link */
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      color: #007acc;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .recipe-card {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="recipe-card">
+    <img id="recipeImage" src="" alt="Recipe Image">
+    <h1 id="recipeTitle">Loading...</h1>
+    <p id="recipeDescription"></p>
+
+    <h3>🥕 Ingredients</h3>
+    <ul id="recipeIngredients"></ul>
+
+    <h3>🍳 Steps</h3>
+    <ol id="recipeSteps"></ol>
+
+    <div class="actions" id="actions" style="display:none;">
+      <button class="edit-btn" id="editBtn">Edit</button>
+      <button class="delete-btn" id="deleteBtn">Delete</button>
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Recipes</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const recipeId = params.get('id');
+
+    async function loadRecipe() {
+      try {
+        const res = await fetch(`/api/recipes/${recipeId}`);
+        if (!res.ok) throw new Error('Recipe not found');
+        const recipe = await res.json();
+
+        document.getElementById('recipeTitle').textContent = recipe.title;
+        document.getElementById('recipeDescription').textContent = recipe.description || 'No description provided';
+        document.getElementById('recipeImage').src = recipe.imageUrl || 'https://via.placeholder.com/700x400';
+
+        const ingList = document.getElementById('recipeIngredients');
+        ingList.innerHTML = recipe.ingredients.map(i => `<li>${i}</li>`).join('');
+
+        const stepList = document.getElementById('recipeSteps');
+        stepList.innerHTML = recipe.steps.map(s => `<li>${s}</li>`).join('');
+      } catch (err) {
+        document.querySelector('.recipe-card').innerHTML = '<h2>Recipe not found 😢</h2>';
+      }
+    }
+
+    async function checkAuth() {
+      const res = await fetch('/auth/check-session');
+      if (res.ok) {
+        document.getElementById('actions').style.display = 'flex';
+      }
+    }
+
+    document.getElementById('editBtn').addEventListener('click', () => {
+      window.location.href = `/edit.html?id=${recipeId}`;
+    });
+
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+      const confirmDelete = confirm('Are you sure you want to delete this recipe?');
+      if (!confirmDelete) return;
+
+      const res = await fetch(`/api/recipes/${recipeId}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('Recipe deleted successfully!');
+        window.location.href = '/index.html';
+      } else {
+        alert('Error deleting recipe');
+      }
+    });
+
+    window.onload = () => {
+      loadRecipe();
+      checkAuth();
+    };
+  </script>
+</body>
+</html>
