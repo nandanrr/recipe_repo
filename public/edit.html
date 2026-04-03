@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Recipe | Recipe Repo 🍲</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* 🌈 Background and layout */
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    /* 🧊 Glass-style form container */
+    .edit-container {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 2rem 2.5rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 5px rgba(78, 137, 255, 0.6);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    button {
+      border: none;
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .save-btn {
+      background: #4e89ff;
+      color: white;
+      box-shadow: 0 4px 10px rgba(78, 137, 255, 0.3);
+    }
+
+    .save-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(78, 137, 255, 0.4);
+    }
+
+    .cancel-btn {
+      background: #ff7b54;
+      color: white;
+      box-shadow: 0 4px 10px rgba(255, 123, 84, 0.3);
+    }
+
+    .cancel-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(255, 123, 84, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="edit-container">
+    <h2>✏️ Edit Recipe</h2>
+    <form id="editForm">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" required>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" required></textarea>
+
+      <label for="ingredients">Ingredients (comma separated)</label>
+      <textarea id="ingredients" name="ingredients" required></textarea>
+
+      <label for="steps">Steps (comma separated)</label>
+      <textarea id="steps" name="steps" required></textarea>
+
+      <label for="imageUrl">Image URL</label>
+      <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+
+      <div class="btn-group">
+        <button type="submit" class="save-btn">💾 Save Changes</button>
+        <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">❌ Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Extract recipe ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const recipeId = params.get('id');
+
+    async function loadRecipe() {
+      try {
+        const res = await fetch(`/api/recipes/${recipeId}`);
+        const recipe = await res.json();
+
+        document.getElementById('title').value = recipe.title;
+        document.getElementById('description').value = recipe.description || '';
+        document.getElementById('ingredients').value = recipe.ingredients.join(', ');
+        document.getElementById('steps').value = recipe.steps.join(', ');
+        document.getElementById('imageUrl').value = recipe.imageUrl || '';
+      } catch (err) {
+        alert('Failed to load recipe.');
+        console.error(err);
+      }
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const updatedRecipe = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        ingredients: document.getElementById('ingredients').value.split(',').map(i => i.trim()),
+        steps: document.getElementById('steps').value.split(',').map(s => s.trim()),
+        imageUrl: document.getElementById('imageUrl').value
+      };
+
+      const res = await fetch(`/api/recipes/${recipeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedRecipe)
+      });
+
+      if (res.ok) {
+        alert('✅ Recipe updated successfully!');
+        window.location.href = `/recipe.html?id=${recipeId}`;
+      } else {
+        alert('❌ Failed to update recipe');
+      }
+    });
+
+    window.onload = loadRecipe;
+  </script>
+</body>
+</html>

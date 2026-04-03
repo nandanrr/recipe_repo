@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Repo 🍲</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ✨ Base Layout */
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ✨ Centered Navbar */
+    header {
+      width: 80%;
+      max-width: 1000px;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    nav a {
+      margin-left: 1.2rem;
+      text-decoration: none;
+      color: #007acc;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #2563eb;
+    }
+
+    /* ✨ Main Section */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    h2 {
+      color: #222;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ✨ Recipe Grid */
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      width: 90%;
+      max-width: 1100px;
+      justify-content: center;
+      align-items: center;
+      animation: fadeUp 0.8s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card img {
+  display: block;
+  margin: 0 auto 10px auto;
+  max-width: 100%;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.6), rgba(240,240,255,0.4)); /* Soft gradient background */
+  backdrop-filter: blur(8px); /* adds glass effect */
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+    .card h3 {
+      color: #222;
+      margin: 0.5rem 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: #444;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .card button {
+      padding: 8px 18px;
+      border: none;
+      background: #4e89ff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .card button:hover {
+      background: #2563eb;
+    }
+
+    /* ✨ Floating Add Button */
+    .add-link {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      background: #ff7b54;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 16px 20px;
+      border-radius: 50px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .add-link:hover {
+      transform: scale(1.07);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        width: 90%;
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      nav a {
+        margin: 0 10px;
+      }
+
+      .add-link {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <h1>🍲 Recipe Repo</h1>
+    <nav id="navbar">
+      <a href="login.html" id="loginLink">Login</a>
+      <a href="register.html" id="registerLink">Register</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>All Recipes</h2>
+    <div id="recipeList" class="recipe-grid"></div>
+  </main>
+
+  <a href="add.html" class="add-link">➕ Add Recipe</a>
+
+  <script>
+    async function loadRecipes() {
+      try {
+        const res = await fetch('/api/recipes');
+        const recipes = await res.json();
+        const container = document.getElementById('recipeList');
+        if (!recipes.length) {
+          container.innerHTML = '<p style="text-align:center;">No recipes added yet 😋</p>';
+          return;
+        }
+
+        container.innerHTML = recipes.map(r => `
+          <div class="card">
+            <img src="${r.imageUrl || 'https://via.placeholder.com/250x150'}" alt="${r.title}">
+            <h3>${r.title}</h3>
+            <p>${r.description || 'No description provided'}</p>
+            <button onclick="viewRecipe('${r._id}')">View</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load recipes', err);
+      }
+    }
+
+    function viewRecipe(id) {
+      window.location.href = `/recipe.html?id=${id}`;
+    }
+
+    async function checkLogin() {
+      try {
+        const res = await fetch('/auth/check-session');
+        if (res.ok) {
+          const user = await res.json();
+          const navbar = document.getElementById('navbar');
+          navbar.innerHTML = `
+            <span style="font-weight:600;">👋 Hi, ${user.name}</span>
+            <a href="#" id="logoutLink">Logout</a>
+          `;
+          document.getElementById('logoutLink').addEventListener('click', async () => {
+            await fetch('/auth/logout', { method: 'POST' });
+            window.location.reload();
+          });
+        }
+      } catch (err) {
+        console.log('User not logged in');
+      }
+    }
+
+    window.onload = () => {
+      checkLogin();
+      loadRecipes();
+    };
+  </script>
+</body>
+</html>
